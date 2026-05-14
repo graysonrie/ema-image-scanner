@@ -10,8 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import getTauriCommands from "@/lib/hooks/getTauriCommands";
-import DeleteProjectDialog from "./DeleteProjectDialog";
-import ArchiveProjectDialog from "./ArchiveProjectDialog";
+import DeleteProjectDialog from "../dialogs/DeleteProjectDialog";
+import ArchiveProjectDialog from "../dialogs/ArchiveProjectDialog";
 
 interface ProjectItemMenuProps {
   projectName: string;

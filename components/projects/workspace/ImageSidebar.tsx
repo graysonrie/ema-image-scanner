@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { Loader2, ImageIcon, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import SidebarImageList from "./SidebarImageList";
-import SidebarFolderItem from "./SidebarFolderItem";
-import CreateFolderDialog from "./CreateFolderDialog";
+import SidebarImageList from "./sidebar/SidebarImageList";
+import SidebarFolderItem from "./sidebar/SidebarFolderItem";
+import CreateFolderDialog from "../dialogs/CreateFolderDialog";
 import { useProjectStore } from "@/lib/stores/projectStore";
 import type { ImagePreviewModel, FullImageModel } from "@/lib/hooks/models";
 

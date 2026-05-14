@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import useProjects from "./useProjects";
-import CreateNewProjectModal from "./CreateNewProjectModal";
+import useProjects from "../hooks/useProjects";
+import CreateNewProjectModal from "../dialogs/CreateNewProjectModal";
 import ProjectItemMenu from "./ProjectItemMenu";
 import ArchivedProjectsSection from "./ArchivedProjectsSection";
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Button } from "../ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { FolderOpen, Image, PlusIcon, Loader2 } from "lucide-react";
 
 export default function ProjectsViewer() {

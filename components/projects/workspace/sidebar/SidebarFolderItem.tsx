@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronDown, ChevronRight, Folder, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import DeleteFolderDialog from "./DeleteFolderDialog";
+import DeleteFolderDialog from "../../dialogs/DeleteFolderDialog";
 
 interface SidebarFolderItemProps {
   folderName: string;

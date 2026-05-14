@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Archive, ChevronDown, ChevronRight, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import getTauriCommands from "@/lib/hooks/getTauriCommands";
-import DeleteProjectDialog from "./DeleteProjectDialog";
+import DeleteProjectDialog from "../dialogs/DeleteProjectDialog";
 
 interface ArchivedProjectsSectionProps {
   /** Called after unarchive or delete so the parent can refresh active projects */

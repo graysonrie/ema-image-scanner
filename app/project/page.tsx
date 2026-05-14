@@ -2,16 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ProjectHeader } from "@/components/projects/ProjectHeader";
-import { ImageSidebar } from "@/components/projects/ImageSidebar";
-import { ImageViewer } from "@/components/projects/ImageViewer";
-import { FolderViewer } from "@/components/projects/FolderViewer";
-import { ExportEvaluationsModal } from "@/components/projects/ExportEvaluationsModal";
-import { ExportResultModal } from "@/components/projects/ExportResultModal";
-import MoveToFolderModal from "@/components/projects/MoveToFolderModal";
-import useProjectImages from "@/components/projects/useProjectImages";
-import useImageEvaluation from "@/components/projects/useImageEvaluation";
-import useProjectFolders from "@/components/projects/useProjectFolders";
+import {
+  ProjectHeader,
+  ImageSidebar,
+  ImageViewer,
+  FolderViewer,
+  ExportEvaluationsModal,
+  ExportResultModal,
+  MoveToFolderModal,
+  useProjectImages,
+  useImageEvaluation,
+  useProjectFolders,
+} from "@/components/projects";
 import useOpenAIApiKey from "@/lib/hooks/useOpenAIApiKey";
 import useCustomPrompt from "@/lib/hooks/useCustomPrompt";
 import getTauriCommands from "@/lib/hooks/getTauriCommands";

@@ -14,7 +14,7 @@ export default function useProjects() {
       const names = await getProjectNames();
       setProjectNames(names);
     } catch (error) {
-      console.error("Failed to fetch project names:", error);
+      console.warn("Failed to fetch project names:", error);
     } finally {
       setIsLoading(false);
     }

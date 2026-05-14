@@ -1,7 +1,7 @@
-use std::process::Command;
-use std::sync::Arc;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+use std::process::Command;
+use std::sync::Arc;
 
 use tauri::State;
 

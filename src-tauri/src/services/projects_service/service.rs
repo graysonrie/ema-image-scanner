@@ -80,7 +80,7 @@ impl ProjectsService {
                 .unwrap_or(0);
             names_with_ts.push((name, ts));
         }
-        names_with_ts.sort_by(|a, b| b.1.cmp(&a.1));
+        names_with_ts.sort_by_key(|b| std::cmp::Reverse(b.1));
         Ok(names_with_ts.into_iter().map(|(n, _)| n).collect())
     }
 
@@ -137,7 +137,7 @@ impl ProjectsService {
                 .unwrap_or(0);
             names_with_ts.push((name, ts));
         }
-        names_with_ts.sort_by(|a, b| b.1.cmp(&a.1));
+        names_with_ts.sort_by_key(|b| std::cmp::Reverse(b.1));
         Ok(names_with_ts.into_iter().map(|(n, _)| n).collect())
     }
 
