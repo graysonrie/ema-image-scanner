@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Bens Image Scanner",
-  "version": "0.6.2",
+  "version": "0.6.1",
   "identifier": "com.bensimagescanner.dev",
   "build": {
     "frontendDist": "../out",
@@ -36,7 +36,8 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "updater": {
