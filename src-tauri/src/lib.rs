@@ -1,7 +1,9 @@
 mod app_service_container;
 mod constants;
 mod services;
+pub use services::on_demand_images_service::tauri_exports::*;
 pub use services::projects_service::tauri_exports::*;
+pub use services::util_service::tauri_exports::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -45,6 +47,11 @@ pub fn run() {
             rename_folder_in_project,
             delete_folder_from_project,
             move_images_in_project,
+            // UtilService
+            copy_to_clipboard,
+            read_image_file_as_data_url,
+            // OnDemandImagesService
+            evaluate_selected_image_on_demand,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

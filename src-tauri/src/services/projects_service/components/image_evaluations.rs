@@ -13,8 +13,7 @@ pub struct ImageEvaluationsComponent {
 }
 
 impl ImageEvaluationsComponent {
-    pub fn new(app_save: Arc<AppSaveService>) -> Self {
-        let client = ocr_image_thing::ImageEvalClient::new();
+    pub fn new(app_save: Arc<AppSaveService>, client:ImageEvalClient) -> Self {
         Self { app_save, client }
     }
 

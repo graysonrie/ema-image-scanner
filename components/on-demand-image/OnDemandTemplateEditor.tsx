@@ -1,9 +1,10 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import OnDemandTemplateFieldRow from "./OnDemandTemplateFieldRow";
 import { OnDemandTemplate } from "./types/on-demand-template.type";
 
 interface OnDemandTemplateEditorProps {
@@ -87,43 +88,13 @@ export default function OnDemandTemplateEditor({
           ) : (
             <div className="space-y-1.5">
               {draft.fields.map((field, index) => (
-                <div
+                <OnDemandTemplateFieldRow
                   key={`field-${index}`}
-                  className="flex items-center gap-2 rounded-md border border-border/70 bg-background/40 px-2 py-1.5"
-                >
-                  <Input
-                    id={`field-name-${index}`}
-                    value={field.fieldName}
-                    onChange={(event) =>
-                      updateField(index, { fieldName: event.target.value })
-                    }
-                    placeholder="Field name"
-                    aria-label={`Field name ${index + 1}`}
-                    className="h-8 min-w-0 flex-1 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0"
-                  />
-                  <label className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-                    <input
-                      type="checkbox"
-                      checked={field.optional}
-                      onChange={(event) =>
-                        updateField(index, { optional: event.target.checked })
-                      }
-                      className="size-3.5 rounded border border-input"
-                    />
-                    Optional
-                  </label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeField(index)}
-                    title="Delete field"
-                    aria-label="Delete field"
-                    className="h-7 w-7 shrink-0"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                  field={field}
+                  index={index}
+                  onChange={(updates) => updateField(index, updates)}
+                  onRemove={() => removeField(index)}
+                />
               ))}
             </div>
           )}

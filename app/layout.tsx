@@ -4,6 +4,7 @@ import "./globals.css";
 import { TitleBar } from "@/components/TitleBar";
 import { KeyboardInterceptor } from "@/components/KeyboardInterceptor";
 import { Toaster } from "@/components/ui/sonner";
+import UpdaterPopup from "@/components/UpdaterPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,13 +28,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body 
+      <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <KeyboardInterceptor />
         <TitleBar />
         {children}
         <Toaster />
+        <UpdaterPopup />
       </body>
     </html>
   );

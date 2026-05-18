@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Bens Image Scanner",
-  "version": "0.5.2",
+  "version": "0.6.2",
   "identifier": "com.bensimagescanner.dev",
   "build": {
     "frontendDist": "../out",
@@ -14,9 +14,9 @@
       {
         "title": "Ben's Image Scanner",
         "width": 500,
-        "height": 500,
-        "minWidth": 400,
-        "minHeight": 400,
+        "height": 580,
+        "minWidth": 500,
+        "minHeight": 580,
         "resizable": true,
         "fullscreen": false,
         "transparent": true,

@@ -2,6 +2,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use ocr_image_thing::ImageEvalClient;
+
 use super::*;
 use crate::services::app_save_service::AppSaveService;
 
@@ -20,9 +22,9 @@ pub struct ProjectsService {
 }
 
 impl ProjectsService {
-    pub fn new(app_save: Arc<AppSaveService>) -> Self {
+    pub fn new(app_save: Arc<AppSaveService>, client: ImageEvalClient) -> Self {
         let image_loader = ImageLoaderComponent::new(app_save.clone());
-        let image_evals = ImageEvaluationsComponent::new(app_save.clone());
+        let image_evals = ImageEvaluationsComponent::new(app_save.clone(), client);
         let image_exporter = ImageExporterComponent::default();
         Self {
             app_save,

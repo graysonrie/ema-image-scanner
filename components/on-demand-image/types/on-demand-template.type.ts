@@ -6,4 +6,5 @@ export interface OnDemandTemplate {
 export interface OnDemandTemplateField {
   fieldName: string;
   optional: boolean;
+  description?: string;
 }
