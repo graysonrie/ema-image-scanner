@@ -1,0 +1,3 @@
+[submodule "src-tauri/crates/ocr_image_thing"]
+	path = src-tauri/crates/ocr_image_thing
+	url = https://github.com/graysonrie/ocr_image_thing.git
