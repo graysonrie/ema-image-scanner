@@ -32,7 +32,7 @@ tokio = { version = "1", features = ["fs", "sync"] }
 futures = "0.3"
 fast_image_resize = "5"
 turbojpeg = "1.1"
-ocr_image_thing = { path = "crates/ocr_image_thing" }
+ocr_image_thing = { path = "ocr_image_thing" }
 tauri-plugin-process = "2"
 clipboard = "0.5"
 
