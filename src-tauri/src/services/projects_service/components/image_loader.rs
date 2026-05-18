@@ -1,4 +1,6 @@
-use std::{collections::HashMap, fs, fs::File, io::BufReader, io::Cursor, path::PathBuf, sync::Arc};
+use std::{
+    collections::HashMap, fs, fs::File, io::BufReader, io::Cursor, path::PathBuf, sync::Arc,
+};
 
 use base64::{engine::general_purpose::STANDARD, Engine};
 use fast_image_resize::{images::Image, ResizeAlg, ResizeOptions, Resizer};
@@ -323,9 +325,13 @@ impl ImageLoaderComponent {
                 .to_string_lossy()
                 .to_string();
 
-            let src_path = self.app_save.get_full_path(&format!("{images_base}/{image_name}"));
+            let src_path = self
+                .app_save
+                .get_full_path(&format!("{images_base}/{image_name}"));
             let new_rel_name = format!("{target_prefix}{file_name}");
-            let dst_path = self.app_save.get_full_path(&format!("{images_base}/{new_rel_name}"));
+            let dst_path = self
+                .app_save
+                .get_full_path(&format!("{images_base}/{new_rel_name}"));
 
             // Skip if source and destination are the same
             if src_path == dst_path {
@@ -333,9 +339,8 @@ impl ImageLoaderComponent {
                 continue;
             }
 
-            fs::rename(&src_path, &dst_path).map_err(|e| {
-                format!("Failed to move {image_name} to {new_rel_name}: {e}")
-            })?;
+            fs::rename(&src_path, &dst_path)
+                .map_err(|e| format!("Failed to move {image_name} to {new_rel_name}: {e}"))?;
 
             new_names.push(new_rel_name);
         }

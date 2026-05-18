@@ -95,7 +95,10 @@ impl ImageEvaluationsComponent {
             .collect();
 
         let full_paths: Vec<String> = selected_images.into_iter().map(|(fp, _)| fp).collect();
-        let eval_results = self.client.evaluate_images(full_paths, custom_prompt, temperature).await;
+        let eval_results = self
+            .client
+            .evaluate_images(full_paths, custom_prompt, temperature)
+            .await;
 
         let current_evals = self.read_images_eval_json(project_name)?;
         let mut new_evals = Vec::new();

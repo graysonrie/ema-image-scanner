@@ -1,5 +1,8 @@
 use std::collections::HashSet;
-use std::{fs, path::{Component, Path, PathBuf}};
+use std::{
+    fs,
+    path::{Component, Path, PathBuf},
+};
 
 use crate::services::projects_service::models::ImageEvaluation;
 
