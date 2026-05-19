@@ -12,6 +12,7 @@ import {
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import useOnDemandProgramOutputLoader from "./hooks/useOnDemandProgramOutputLoader";
+import { useOnDemandImagesStore } from "./store/on-demand-images-store";
 import { useOnDemandProgramOutputStore } from "./store/on-demand-program-output-store";
 
 export default function OnDemandProgramOutput() {
@@ -19,7 +20,10 @@ export default function OnDemandProgramOutput() {
     useOnDemandProgramOutputLoader();
   const output = useOnDemandProgramOutputStore((state) => state.output);
   const isEvaluating = useOnDemandProgramOutputStore(
-    (state) => state.isEvaluating,
+    (state) => state.isEvaluating
+  );
+  const imageCount = useOnDemandImagesStore(
+    (state) => state.currentImagePaths.length,
   );
 
   return (
@@ -36,10 +40,12 @@ export default function OnDemandProgramOutput() {
             {isEvaluating ? (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Evaluating image...
+                Evaluating {imageCount > 1 ? "images" : "image"}...
               </div>
             ) : output ? (
-              <pre className="whitespace-pre-wrap font-sans text-sm">{output}</pre>
+              <pre className="whitespace-pre-wrap font-sans text-sm">
+                {output}
+              </pre>
             ) : (
               <p className="text-sm text-muted-foreground">
                 OCR extraction result will be displayed here. It will follow the
@@ -52,14 +58,15 @@ export default function OnDemandProgramOutput() {
       <CardFooter>
         <div className="flex items-center gap-2">
           <Checkbox
+            id="sysclip"
             checked={autoCopyToSystemClipboard}
             onCheckedChange={(checked) =>
               saveAutoCopyToSystemClipboard(
-                checked === "indeterminate" ? false : checked,
+                checked === "indeterminate" ? false : checked
               )
             }
           />
-          <Label className="text-sm text-muted-foreground">
+          <Label htmlFor="sysclip" className="text-sm text-muted-foreground">
             Automatically copy to system clipboard
           </Label>
         </div>

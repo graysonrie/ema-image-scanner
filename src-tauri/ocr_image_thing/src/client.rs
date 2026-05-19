@@ -7,6 +7,7 @@ use tokio::sync::Mutex;
 use crate::{
     DEFAULT_OPENAI_MODEL, ImageEvaluationResult, evaluate_image as run_image_evaluation,
     evaluate_image_raw as run_raw_image_evaluation,
+    evaluate_images_raw as run_raw_image_evaluations,
 };
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
@@ -63,6 +64,23 @@ impl ImageEvalClient {
         };
 
         run_raw_image_evaluation(&client, prompt, image_path, model, temperature).await
+    }
+
+    pub async fn evaluate_images_raw(
+        &self,
+        image_paths: Vec<String>,
+        prompt: String,
+        temperature: f32,
+    ) -> Result<String, String> {
+        let (api_key, model) = {
+            let inner = self.inner.lock().await;
+            (inner.openai_api_key.clone(), inner.ai_model.clone())
+        };
+        let client = match &api_key {
+            Some(key) => Client::with_config(OpenAIConfig::new().with_api_key(key)),
+            None => Client::new(),
+        };
+        run_raw_image_evaluations(&client, prompt, image_paths, model, temperature).await
     }
 
     pub async fn evaluate_image(

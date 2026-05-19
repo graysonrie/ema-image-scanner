@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -10,14 +10,22 @@ import { OnDemandTemplateField } from "./types/on-demand-template.type";
 interface OnDemandTemplateFieldRowProps {
   field: OnDemandTemplateField;
   index: number;
+  isFirst: boolean;
+  isLast: boolean;
   onChange: (updates: Partial<OnDemandTemplateField>) => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onRemove: () => void;
 }
 
 export default function OnDemandTemplateFieldRow({
   field,
   index,
+  isFirst,
+  isLast,
   onChange,
+  onMoveUp,
+  onMoveDown,
   onRemove,
 }: OnDemandTemplateFieldRowProps) {
   return (
@@ -43,6 +51,32 @@ export default function OnDemandTemplateFieldRow({
           />
           Optional
         </label>
+        {!isFirst && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onMoveUp}
+            title="Move field up"
+            aria-label="Move field up"
+            className="h-7 w-7 shrink-0"
+          >
+            <ArrowUp className="h-3.5 w-3.5" />
+          </Button>
+        )}
+        {!isLast && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onMoveDown}
+            title="Move field down"
+            aria-label="Move field down"
+            className="h-7 w-7 shrink-0"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+          </Button>
+        )}
         <Button
           type="button"
           variant="ghost"

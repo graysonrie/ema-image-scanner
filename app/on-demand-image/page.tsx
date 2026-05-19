@@ -1,14 +1,28 @@
 "use client";
 
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, InfoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import OnDemandDragAndDropField from "@/components/on-demand-image/OnDemandDragAndDropField";
 import OnDemandTemplateSelector from "@/components/on-demand-image/OnDemandTemplateSelector";
 import OnDemandProgramOutput from "@/components/on-demand-image/OnDemandProgramOutput";
+import useOnDemandImageSettings from "@/components/on-demand-image/hooks/useOnDemandImageSettings";
+import useOnDemandManualEvaluation from "@/components/on-demand-image/hooks/useOnDemandManualEvaluation";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { cn } from "@/lib/utils";
 
 export default function OnDemandImagePage() {
   const router = useRouter();
+
+  const { waitForManualEvalTrigger, saveWaitForManualEvalTrigger } =
+    useOnDemandImageSettings();
+  const { evaluateCurrentImages, canEvaluate } = useOnDemandManualEvaluation();
 
   function onBackClick() {
     router.push("/");
@@ -28,7 +42,46 @@ export default function OnDemandImagePage() {
       </Button>
       <div className="mx-auto flex w-full max-w-5xl min-h-0 flex-1 flex-col">
         <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
-          <OnDemandDragAndDropField />
+          <div className="w-full flex-col h-full flex">
+            <OnDemandDragAndDropField />
+            <div className="flex flex-0 items-center gap-2 p-2 w-full h-full">
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <Checkbox
+                  id="option"
+                  checked={waitForManualEvalTrigger}
+                  onCheckedChange={(checked) =>
+                    saveWaitForManualEvalTrigger(
+                      checked === "indeterminate" ? false : checked
+                    )
+                  }
+                />
+                <Label htmlFor="option">Wait for manual evaluation</Label>
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <InfoIcon className="size-4 text-muted-foreground shrink-0" />
+                  </HoverCardTrigger>
+                  <HoverCardContent className="flex w-64 flex-col gap-0.5">
+                    <Label>
+                      If checked, then you must manually click 'Evaluate' to
+                      trigger the OCR analysis on the image(s)
+                    </Label>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+              <Button
+                className={cn(
+                  "flex-1",
+                  !waitForManualEvalTrigger && "invisible"
+                )}
+                disabled={!waitForManualEvalTrigger || !canEvaluate}
+                tabIndex={waitForManualEvalTrigger ? 0 : -1}
+                aria-hidden={!waitForManualEvalTrigger}
+                onClick={evaluateCurrentImages}
+              >
+                Evaluate
+              </Button>
+            </div>
+          </div>
           <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
             <OnDemandTemplateSelector />
             <div className="shrink-0">

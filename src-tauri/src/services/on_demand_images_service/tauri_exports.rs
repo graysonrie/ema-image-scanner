@@ -9,11 +9,11 @@ type OnDemandImagesServiceType<'a> = State<'a, Arc<OnDemandImagesService>>;
 #[tauri::command]
 pub async fn evaluate_selected_image_on_demand<'a>(
     state: OnDemandImagesServiceType<'a>,
-    image_path: String,
+    image_paths: Vec<String>,
     template: OnDemandTemplate,
     openai_api_key: String,
 ) -> Result<String, String> {
     state
-        .evaluate_selected(image_path, &template, &openai_api_key)
+        .evaluate_selected(image_paths, &template, &openai_api_key)
         .await
 }

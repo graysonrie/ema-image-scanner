@@ -3,24 +3,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { toast } from "sonner";
-import getUtilServiceCommands from "@/lib/tauri/getUtilServiceCommands";
 import useOnDemandImageEvaluation from "./useOnDemandImageEvaluation";
-import {
-  useOnDemandImagesStore,
-} from "../store/on-demand-images-store";
+import useOnDemandImageSettings from "./useOnDemandImageSettings";
+import useDroppedImagePreviews from "./useDroppedImagePreviews";
+import { useOnDemandImagesStore } from "../store/on-demand-images-store";
 import { useOnDemandProgramOutputStore } from "../store/on-demand-program-output-store";
-
-const IMAGE_PATH_PATTERN = /\.(jpe?g|png|gif|webp)$/i;
-
-function isImagePath(path: string): boolean {
-  return IMAGE_PATH_PATTERN.test(path);
-}
-
-function getFileName(path: string): string {
-  const parts = path.replace(/\\/g, "/").split("/");
-  return parts[parts.length - 1] ?? path;
-}
-
+import {
+  isImagePath,
+  mergeImagePaths,
+} from "../utils/on-demand-image-path.utils";
+``
 function isPointInsideRect(
   x: number,
   y: number,
@@ -34,78 +26,83 @@ function getSelectedTemplate() {
 }
 
 export default function useOnDemandImageDrop() {
-  const { evaluateDroppedImage, isEvaluating } = useOnDemandImageEvaluation();
+  const { evaluateDroppedImages, isEvaluating } = useOnDemandImageEvaluation();
+  const { waitForManualEvalTrigger } = useOnDemandImageSettings();
   const clearOutput = useOnDemandProgramOutputStore((state) => state.clearOutput);
   const dropZoneRef = useRef<HTMLDivElement>(null);
-  const setCurrentImagePath = useOnDemandImagesStore(
-    (state) => state.setCurrentImagePath,
+  const setCurrentImagePaths = useOnDemandImagesStore(
+    (state) => state.setCurrentImagePaths,
   );
-  const currentImagePath = useOnDemandImagesStore(
-    (state) => state.currentImagePath,
+  const removeCurrentImagePath = useOnDemandImagesStore(
+    (state) => state.removeCurrentImagePath,
+  );
+  const clearCurrentImagePaths = useOnDemandImagesStore(
+    (state) => state.clearCurrentImagePaths,
+  );
+  const currentImagePaths = useOnDemandImagesStore(
+    (state) => state.currentImagePaths,
   );
   const selectedTemplate = useOnDemandImagesStore(
     (state) => state.selectedTemplate,
   );
   const hasSelectedTemplate = selectedTemplate !== null;
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+  const droppedImages = useDroppedImagePreviews(
+    currentImagePaths,
+    hasSelectedTemplate,
+  );
 
   useEffect(() => {
     if (!hasSelectedTemplate) {
-      setCurrentImagePath(null);
-      setPreviewUrl(null);
+      clearCurrentImagePaths();
       setIsDragOver(false);
       clearOutput();
     }
-  }, [clearOutput, hasSelectedTemplate, setCurrentImagePath]);
+  }, [clearCurrentImagePaths, clearOutput, hasSelectedTemplate]);
 
-  const loadPreview = useCallback(async (path: string) => {
-    try {
-      const dataUrl =
-        await getUtilServiceCommands().readImageFileAsDataUrl(path);
-      setPreviewUrl(dataUrl);
-    } catch (error) {
-      console.error("Failed to load image preview:", error);
-      setPreviewUrl(null);
-      toast.error("Failed to load image preview", {
-        description: String(error),
-      });
-    }
-  }, []);
-
-  const applyImagePath = useCallback(
-    (path: string) => {
+  const applyImagePaths = useCallback(
+    (incomingPaths: string[]) => {
       const template = getSelectedTemplate();
       if (!template) {
         toast.error("Select a template before dropping an image");
         return;
       }
 
-      if (!isImagePath(path)) {
-        toast.error("Please drop an image file");
+      const imagePaths = incomingPaths.filter(isImagePath);
+      if (imagePaths.length === 0) {
+        toast.error("Please drop at least one image file");
         return;
       }
 
-      setCurrentImagePath(path);
-      void loadPreview(path);
-      void evaluateDroppedImage(path, template);
+      const nextPaths = waitForManualEvalTrigger
+        ? mergeImagePaths(
+            useOnDemandImagesStore.getState().currentImagePaths,
+            imagePaths,
+          )
+        : imagePaths;
+
+      setCurrentImagePaths(nextPaths);
+
+      if (!waitForManualEvalTrigger) {
+        void evaluateDroppedImages(nextPaths, template);
+      }
     },
-    [evaluateDroppedImage, loadPreview, setCurrentImagePath],
+    [
+      evaluateDroppedImages,
+      setCurrentImagePaths,
+      waitForManualEvalTrigger,
+    ],
   );
 
-  const applyImagePathRef = useRef(applyImagePath);
-  applyImagePathRef.current = applyImagePath;
+  const applyImagePathsRef = useRef(applyImagePaths);
+  applyImagePathsRef.current = applyImagePaths;
 
-  useEffect(() => {
-    if (!currentImagePath) {
-      setPreviewUrl(null);
-      return;
-    }
-
-    if (isImagePath(currentImagePath)) {
-      void loadPreview(currentImagePath);
-    }
-  }, [currentImagePath, loadPreview]);
+  const removeDroppedImage = useCallback(
+    (path: string) => {
+      removeCurrentImagePath(path);
+    },
+    [removeCurrentImagePath],
+  );
 
   useEffect(() => {
     const dropZone = dropZoneRef.current;
@@ -152,13 +149,7 @@ export default function useOnDemandImageDrop() {
           return;
         }
 
-        const imagePath = payload.paths.find(isImagePath);
-        if (!imagePath) {
-          toast.error("Please drop an image file");
-          return;
-        }
-
-        applyImagePathRef.current(imagePath);
+        applyImagePathsRef.current(payload.paths);
       })
       .then((fn) => {
         unlisten = fn;
@@ -169,14 +160,13 @@ export default function useOnDemandImageDrop() {
     };
   }, []);
 
-  const fileName = currentImagePath ? getFileName(currentImagePath) : null;
-
   return {
     dropZoneRef,
-    previewUrl: hasSelectedTemplate ? previewUrl : null,
-    fileName: hasSelectedTemplate ? fileName : null,
+    droppedImages: hasSelectedTemplate ? droppedImages : [],
     isDragOver,
     hasSelectedTemplate,
     isEvaluating,
+    waitForManualEvalTrigger,
+    removeDroppedImage,
   };
 }

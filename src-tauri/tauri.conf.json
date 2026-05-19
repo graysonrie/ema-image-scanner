@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Bens Image Scanner",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "identifier": "com.bensimagescanner.dev",
   "build": {
     "frontendDist": "../out",
@@ -45,7 +45,7 @@
       "endpoints": [
         "https://github.com/graysonrie/ema-image-scanner/releases/latest/download/latest.json"
       ],
-      "pubkey":"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkzOEYxRjMyQ0E1NEI0QjEKUldTeHRGVEtNaCtQazJpWGJEV0RubHRqUWFNUTRCa3plWUdYbmhvclVQdUx0TG1yamRoQ2NNd0YK" 
+      "pubkey":"dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDkzOEYxRjMyQ0E1NEI0QjEKUldTeHRGVEtNaCtQazJpWGJEV0RubHRqUWFNUTRCa3plWUdYbmhvclVQdUx0TG1yamRoQ2NNd0YK"
     }
   }
 }

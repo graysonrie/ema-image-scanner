@@ -48,6 +48,17 @@ export default function OnDemandTemplateEditor({
     });
   };
 
+  const moveField = (index: number, direction: "up" | "down") => {
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= draft.fields.length) {
+      return;
+    }
+
+    const fields = [...draft.fields];
+    [fields[index], fields[targetIndex]] = [fields[targetIndex], fields[index]];
+    onDraftChange({ ...draft, fields });
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
@@ -92,7 +103,11 @@ export default function OnDemandTemplateEditor({
                   key={`field-${index}`}
                   field={field}
                   index={index}
+                  isFirst={index === 0}
+                  isLast={index === draft.fields.length - 1}
                   onChange={(updates) => updateField(index, updates)}
+                  onMoveUp={() => moveField(index, "up")}
+                  onMoveDown={() => moveField(index, "down")}
                   onRemove={() => removeField(index)}
                 />
               ))}
