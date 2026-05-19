@@ -54,7 +54,7 @@ jobs:
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "App v__VERSION__"
-          releaseBody: "does anyone actually read these?"
+          releaseBody: "Quick Start: Added multiple image support and field reordering"
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
