@@ -23,6 +23,14 @@ export default function useDroppedImagePreviews(
       return;
     }
 
+    setPreviews(
+      imagePaths.map((path) => ({
+        path,
+        fileName: getFileName(path),
+        previewUrl: null,
+      })),
+    );
+
     let cancelled = false;
 
     void Promise.all(
