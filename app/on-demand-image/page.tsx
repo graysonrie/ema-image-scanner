@@ -7,6 +7,7 @@ import OnDemandDragAndDropField from "@/components/on-demand-image/OnDemandDragA
 import OnDemandTemplateSelector from "@/components/on-demand-image/OnDemandTemplateSelector";
 import OnDemandProgramOutput from "@/components/on-demand-image/OnDemandProgramOutput";
 import useOnDemandImageSettings from "@/components/on-demand-image/hooks/useOnDemandImageSettings";
+import useOnDemandManualEvaluation from "@/components/on-demand-image/hooks/useOnDemandManualEvaluation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,6 +22,7 @@ export default function OnDemandImagePage() {
 
   const { waitForManualEvalTrigger, saveWaitForManualEvalTrigger } =
     useOnDemandImageSettings();
+  const { evaluateCurrentImages, canEvaluate } = useOnDemandManualEvaluation();
 
   function onBackClick() {
     router.push("/");
@@ -71,9 +73,10 @@ export default function OnDemandImagePage() {
                   "flex-1",
                   !waitForManualEvalTrigger && "invisible"
                 )}
-                disabled={!waitForManualEvalTrigger}
+                disabled={!waitForManualEvalTrigger || !canEvaluate}
                 tabIndex={waitForManualEvalTrigger ? 0 : -1}
                 aria-hidden={!waitForManualEvalTrigger}
+                onClick={evaluateCurrentImages}
               >
                 Evaluate
               </Button>

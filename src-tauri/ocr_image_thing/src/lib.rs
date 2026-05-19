@@ -180,6 +180,24 @@ async fn evaluate_image(
     Ok(parsed)
 }
 
+async fn evaluate_images_raw(
+    client: &Client<OpenAIConfig>,
+    prompt: String,
+    image_paths: Vec<String>,
+    model: String,
+    temperature: f32,
+) -> Result<String, String> {
+    let args = AnalyzeMultipleImageArgs {
+        image_paths,
+        model,
+        prompt,
+        temperature,
+    };
+    analyze_images(client, args)
+        .await
+        .map_err(|e| e.to_string())
+}
+
 async fn evaluate_image_raw(
     client: &Client<OpenAIConfig>,
     prompt: String,
@@ -201,6 +219,13 @@ async fn evaluate_image_raw(
     Ok(result)
 }
 
+pub struct AnalyzeMultipleImageArgs {
+    pub image_paths: Vec<String>,
+    pub model: String,
+    pub prompt: String,
+    pub temperature: f32,
+}
+
 pub struct AnalyzeImageArgs {
     pub image_path: String,
     pub model: String,
@@ -208,64 +233,45 @@ pub struct AnalyzeImageArgs {
     pub temperature: f32,
 }
 
-/// Send an image to the OpenAI client
-async fn analyze_image(
-    client: &Client<OpenAIConfig>,
-    args: AnalyzeImageArgs,
-) -> Result<String, Box<dyn Error>> {
-    let image_path = &args.image_path;
+fn mime_type_for_image_path(image_path: &str) -> Result<&'static str, Box<dyn Error>> {
+    if image_path.ends_with(".jpg") || image_path.ends_with(".jpeg") {
+        Ok("image/jpeg")
+    } else if image_path.ends_with(".png") {
+        Ok("image/png")
+    } else if image_path.ends_with(".gif") {
+        Ok("image/gif")
+    } else if image_path.ends_with(".webp") {
+        Ok("image/webp")
+    } else {
+        Err(format!("Unsupported image format: {}", image_path).into())
+    }
+}
 
+fn encode_image_as_data_uri(image_path: &str) -> Result<String, Box<dyn Error>> {
     if image_path.is_empty() {
         return Err("Image path is empty".into());
     }
 
-    // Read the image file and encode it as base64
     let image_data = std::fs::read(image_path)?;
     let base64_encoded = general_purpose::STANDARD.encode(&image_data);
+    let mime_type = mime_type_for_image_path(image_path)?;
 
-    // Determine the MIME type based on file extension
-    let mime_type = if image_path.ends_with(".jpg") || image_path.ends_with(".jpeg") {
-        "image/jpeg"
-    } else if image_path.ends_with(".png") {
-        "image/png"
-    } else if image_path.ends_with(".gif") {
-        "image/gif"
-    } else if image_path.ends_with(".webp") {
-        "image/webp"
-    } else {
-        return Err(format!("Unsupported image format: {}", image_path).into());
-    };
+    Ok(format!("data:{};base64,{}", mime_type, base64_encoded))
+}
 
-    // Create data URI with base64 encoded image
-    let image_data_uri = format!("data:{};base64,{}", mime_type, base64_encoded);
+fn input_image_content(image_data_uri: String) -> InputContent {
+    InputContent::InputImage(InputImageContent {
+        detail: ImageDetail::Auto,
+        image_url: Some(image_data_uri),
+        file_id: None,
+    })
+}
 
-    let request = CreateResponseArgs::default()
-        .temperature(args.temperature)
-        .model(args.model)
-        .input(InputMessage {
-            content: vec![
-                args.prompt.into(),
-                InputContent::InputImage(InputImageContent {
-                    detail: ImageDetail::Auto,
-                    image_url: Some(image_data_uri),
-                    file_id: None,
-                }),
-            ],
-            role: InputRole::User,
-            status: None,
-        })
-        .build()?;
-
-    // println!(
-    //     "analyze_image_url request:\n{}",
-    //     serde_json::to_string(&request)?
-    // );
-
-    let response = client.responses().create(request).await?;
+fn extract_text_from_response(output: Vec<OutputItem>) -> Result<String, Box<dyn Error>> {
     let mut text_response = Vec::new();
 
-    for output in response.output {
-        match output {
+    for item in output {
+        match item {
             OutputItem::Message(message) => {
                 for content in message.content {
                     match content {
@@ -278,9 +284,78 @@ async fn analyze_image(
                     }
                 }
             }
-            _ => println!("Other output: {:?}", output),
+            _ => println!("Other output: {:?}", item),
         }
     }
 
     Ok(text_response.join(" "))
+}
+
+async fn send_image_analysis_request(
+    client: &Client<OpenAIConfig>,
+    model: String,
+    prompt: String,
+    temperature: f32,
+    image_data_uris: Vec<String>,
+) -> Result<String, Box<dyn Error>> {
+    if image_data_uris.is_empty() {
+        return Err("No images provided".into());
+    }
+
+    let mut content = vec![prompt.into()];
+    content.extend(image_data_uris.into_iter().map(input_image_content));
+
+    let request = CreateResponseArgs::default()
+        .temperature(temperature)
+        .model(model)
+        .input(InputMessage {
+            content,
+            role: InputRole::User,
+            status: None,
+        })
+        .build()?;
+
+    let response = client.responses().create(request).await?;
+    extract_text_from_response(response.output)
+}
+
+async fn analyze_images(
+    client: &Client<OpenAIConfig>,
+    args: AnalyzeMultipleImageArgs,
+) -> Result<String, Box<dyn Error>> {
+    if args.image_paths.is_empty() {
+        return Err("No image paths provided".into());
+    }
+
+    let image_data_uris = args
+        .image_paths
+        .iter()
+        .map(|path| encode_image_as_data_uri(path))
+        .collect::<Result<Vec<_>, _>>()?;
+
+    send_image_analysis_request(
+        client,
+        args.model,
+        args.prompt,
+        args.temperature,
+        image_data_uris,
+    )
+    .await
+}
+
+/// Send an image to the OpenAI client
+async fn analyze_image(
+    client: &Client<OpenAIConfig>,
+    args: AnalyzeImageArgs,
+) -> Result<String, Box<dyn Error>> {
+    let image_data_uri = encode_image_as_data_uri(&args.image_path)?;
+
+    send_image_analysis_request(
+        client,
+        args.model,
+        args.prompt,
+        args.temperature,
+        vec![image_data_uri],
+    )
+    .await
 }

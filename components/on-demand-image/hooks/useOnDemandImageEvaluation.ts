@@ -13,14 +13,14 @@ export default function useOnDemandImageEvaluation() {
   const { getValue } = useTauriStore();
   const setOutput = useOnDemandProgramOutputStore((state) => state.setOutput);
   const setIsEvaluating = useOnDemandProgramOutputStore(
-    (state) => state.setIsEvaluating,
+    (state) => state.setIsEvaluating
   );
   const isEvaluating = useOnDemandProgramOutputStore(
-    (state) => state.isEvaluating,
+    (state) => state.isEvaluating
   );
 
-  const evaluateDroppedImage = useCallback(
-    async (imagePath: string, template: OnDemandTemplate) => {
+  const evaluateDroppedImages = useCallback(
+    async (imagePaths: string[], template: OnDemandTemplate) => {
       const openaiApiKey = await getValue<string>("openAIApiKey");
       if (!openaiApiKey?.trim()) {
         toast.error("Set your OpenAI API key in App Settings first");
@@ -33,15 +33,15 @@ export default function useOnDemandImageEvaluation() {
       try {
         const result =
           await getOnDemandImagesServiceCommands().evaluateSelectedImageOnDemand(
-            imagePath,
+            imagePaths,
             template,
-            openaiApiKey,
+            openaiApiKey
           );
 
         setOutput(result);
 
         const autoCopy = await getValue<boolean>(
-          ON_DEMAND_COPY_TO_SYSTEM_CLIPBOARD_STORAGE_KEY,
+          ON_DEMAND_COPY_TO_SYSTEM_CLIPBOARD_STORAGE_KEY
         );
         if (autoCopy ?? true) {
           await getUtilServiceCommands().copyToClipboard(result);
@@ -56,8 +56,8 @@ export default function useOnDemandImageEvaluation() {
         setIsEvaluating(false);
       }
     },
-    [getValue, setIsEvaluating, setOutput],
+    [getValue, setIsEvaluating, setOutput]
   );
 
-  return { evaluateDroppedImage, isEvaluating };
+  return { evaluateDroppedImages, isEvaluating };
 }

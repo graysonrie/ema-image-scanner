@@ -3,7 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 interface OnDemandImagesServiceCommands {
   evaluateSelectedImageOnDemand: (
-    imagePath: string,
+    imagePaths: string[],
     template: OnDemandTemplate,
     openaiApiKey: string,
   ) => Promise<string>;
@@ -11,9 +11,9 @@ interface OnDemandImagesServiceCommands {
 
 export default function getOnDemandImagesServiceCommands(): OnDemandImagesServiceCommands {
   return {
-    evaluateSelectedImageOnDemand: (imagePath, template, openaiApiKey) =>
+    evaluateSelectedImageOnDemand: (imagePaths, template, openaiApiKey) =>
       invoke("evaluate_selected_image_on_demand", {
-        imagePath,
+        imagePaths,
         template,
         openaiApiKey,
       }),

@@ -13,18 +13,30 @@ impl OnDemandImagesService {
 
     pub async fn evaluate_selected(
         &self,
-        image_path: String,
+        image_paths: Vec<String>,
         active_template: &OnDemandTemplate,
         openai_api_key: &str,
     ) -> Result<String, String> {
+        if image_paths.is_empty() {
+            return Err("No image paths provided".to_string());
+        }
         self.client.set_api_key(openai_api_key).await;
 
         let temperature = 0.8;
         let prompt = self.create_prompt_with_template(active_template);
 
-        self.client
-            .evaluate_image_raw(image_path, prompt, temperature)
-            .await
+        if image_paths.len() == 1 {
+            let image_path = image_paths[0].clone();
+            return self
+                .client
+                .evaluate_image_raw(image_path, prompt, temperature)
+                .await;
+        } else {
+            return self
+                .client
+                .evaluate_images_raw(image_paths, prompt, temperature)
+                .await;
+        }
     }
 
     fn create_prompt_with_template(&self, template: &OnDemandTemplate) -> String {
