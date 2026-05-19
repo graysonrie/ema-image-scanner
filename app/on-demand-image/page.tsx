@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import OnDemandDragAndDropField from "@/components/on-demand-image/OnDemandDragAndDropField";
 import OnDemandTemplateSelector from "@/components/on-demand-image/OnDemandTemplateSelector";
 import OnDemandProgramOutput from "@/components/on-demand-image/OnDemandProgramOutput";
-import useOnDemandImageSettings from "@/components/on-demand-image/hooks/useOnDemandImageSettings";
 import useOnDemandManualEvaluation from "@/components/on-demand-image/hooks/useOnDemandManualEvaluation";
+import useOnDemandSettingsHydration from "@/components/on-demand-image/hooks/useOnDemandSettingsHydration";
+import { useOnDemandSettingsStore } from "@/components/on-demand-image/store/on-demand-settings-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,8 +21,13 @@ import { cn } from "@/lib/utils";
 export default function OnDemandImagePage() {
   const router = useRouter();
 
-  const { waitForManualEvalTrigger, saveWaitForManualEvalTrigger } =
-    useOnDemandImageSettings();
+  useOnDemandSettingsHydration();
+  const waitForManualEvalTrigger = useOnDemandSettingsStore(
+    (state) => state.waitForManualEvalTrigger,
+  );
+  const setWaitForManualEvalTrigger = useOnDemandSettingsStore(
+    (state) => state.setWaitForManualEvalTrigger,
+  );
   const { evaluateCurrentImages, canEvaluate } = useOnDemandManualEvaluation();
 
   function onBackClick() {
@@ -50,8 +56,8 @@ export default function OnDemandImagePage() {
                   id="option"
                   checked={waitForManualEvalTrigger}
                   onCheckedChange={(checked) =>
-                    saveWaitForManualEvalTrigger(
-                      checked === "indeterminate" ? false : checked
+                    setWaitForManualEvalTrigger(
+                      checked === "indeterminate" ? false : checked,
                     )
                   }
                 />
