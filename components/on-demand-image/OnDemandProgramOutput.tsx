@@ -19,7 +19,7 @@ export default function OnDemandProgramOutput() {
     useOnDemandProgramOutputLoader();
   const output = useOnDemandProgramOutputStore((state) => state.output);
   const isEvaluating = useOnDemandProgramOutputStore(
-    (state) => state.isEvaluating,
+    (state) => state.isEvaluating
   );
 
   return (
@@ -39,7 +39,9 @@ export default function OnDemandProgramOutput() {
                 Evaluating image...
               </div>
             ) : output ? (
-              <pre className="whitespace-pre-wrap font-sans text-sm">{output}</pre>
+              <pre className="whitespace-pre-wrap font-sans text-sm">
+                {output}
+              </pre>
             ) : (
               <p className="text-sm text-muted-foreground">
                 OCR extraction result will be displayed here. It will follow the
@@ -52,14 +54,15 @@ export default function OnDemandProgramOutput() {
       <CardFooter>
         <div className="flex items-center gap-2">
           <Checkbox
+            id="sysclip"
             checked={autoCopyToSystemClipboard}
             onCheckedChange={(checked) =>
               saveAutoCopyToSystemClipboard(
-                checked === "indeterminate" ? false : checked,
+                checked === "indeterminate" ? false : checked
               )
             }
           />
-          <Label className="text-sm text-muted-foreground">
+          <Label htmlFor="sysclip" className="text-sm text-muted-foreground">
             Automatically copy to system clipboard
           </Label>
         </div>
