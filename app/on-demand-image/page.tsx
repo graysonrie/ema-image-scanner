@@ -17,18 +17,23 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
+import { useOnDemandImagesStore } from "@/components/on-demand-image/store/on-demand-images-store";
+import { useCallback } from "react";
 
 export default function OnDemandImagePage() {
   const router = useRouter();
 
   useOnDemandSettingsHydration();
   const waitForManualEvalTrigger = useOnDemandSettingsStore(
-    (state) => state.waitForManualEvalTrigger,
+    (state) => state.waitForManualEvalTrigger
   );
   const setWaitForManualEvalTrigger = useOnDemandSettingsStore(
-    (state) => state.setWaitForManualEvalTrigger,
+    (state) => state.setWaitForManualEvalTrigger
   );
   const { evaluateCurrentImages, canEvaluate } = useOnDemandManualEvaluation();
+
+  const { currentImagePaths, clearCurrentImagePaths } =
+    useOnDemandImagesStore();
 
   function onBackClick() {
     router.push("/");
@@ -43,12 +48,22 @@ export default function OnDemandImagePage() {
         title="Back"
         className="mb-4 shrink-0 self-start"
       >
-        <ArrowLeftIcon className="w-4 h-4" />
+        <ArrowLeftIcon className="size-4" />
         Back
       </Button>
       <div className="mx-auto flex w-full max-w-5xl min-h-0 flex-1 flex-col">
         <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
           <div className="w-full flex-col h-full flex">
+            <div className="w-full flex py-2">
+              <Button
+                className={cn(currentImagePaths.length < 2 && "invisible")}
+                onClick={() => {
+                  clearCurrentImagePaths();
+                }}
+              >
+                Clear all images
+              </Button>
+            </div>
             <OnDemandDragAndDropField />
             <div className="flex flex-0 items-center gap-2 p-2 w-full h-full">
               <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -57,7 +72,7 @@ export default function OnDemandImagePage() {
                   checked={waitForManualEvalTrigger}
                   onCheckedChange={(checked) =>
                     setWaitForManualEvalTrigger(
-                      checked === "indeterminate" ? false : checked,
+                      checked === "indeterminate" ? false : checked
                     )
                   }
                 />
@@ -68,8 +83,9 @@ export default function OnDemandImagePage() {
                   </HoverCardTrigger>
                   <HoverCardContent className="flex w-64 flex-col gap-0.5">
                     <Label>
-                      If checked, then you must manually click 'Evaluate' to
-                      trigger the OCR analysis on the image(s)
+                      If checked, then you must manually click
+                      &lsquo;Evaluate&lsquo; to trigger the OCR analysis on the
+                      image(s)
                     </Label>
                   </HoverCardContent>
                 </HoverCard>
