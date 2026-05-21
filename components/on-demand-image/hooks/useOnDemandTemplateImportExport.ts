@@ -17,12 +17,14 @@ import { parseOnDemandTemplateList } from "../utils/parse-on-demand-template-lis
 import { persistOnDemandTemplates } from "../utils/persist-on-demand-templates";
 
 export default function useOnDemandTemplateImportExport(
-  setIsSaving: (value: boolean) => void,
+  setIsSaving: (value: boolean) => void
 ) {
   const templates = useOnDemandTemplatesStore((state) => state.templates);
-  const saveTemplates = useOnDemandTemplatesStore((state) => state.saveTemplates);
+  const saveTemplates = useOnDemandTemplatesStore(
+    (state) => state.saveTemplates
+  );
   const setSelectedTemplate = useOnDemandImagesStore(
-    (state) => state.setSelectedTemplate,
+    (state) => state.setSelectedTemplate
   );
   const { setValue } = useTauriStore();
 
@@ -46,7 +48,7 @@ export default function useOnDemandTemplateImportExport(
         setIsSaving(false);
       }
     },
-    [saveTemplates, setIsSaving, setSelectedTemplate, setValue],
+    [saveTemplates, setIsSaving, setSelectedTemplate, setValue]
   );
 
   const exportTemplates = useCallback(async () => {
