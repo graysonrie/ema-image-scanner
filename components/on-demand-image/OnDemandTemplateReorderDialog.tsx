@@ -13,7 +13,11 @@ import { useOnDemandTemplateReorderDialogStore } from "./store/on-demand-templat
 export default function OnDemandTemplateReorderDialog() {
   const { isOpen, setIsOpen } = useOnDemandTemplateReorderDialogStore();
 
-  return <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
-    
-  </Dialog>;
+  return (
+    <Dialog open={isOpen} onOpenChange={(val) => setIsOpen(val)}>
+      <DialogContent>
+        <DialogTitle>Template Settings</DialogTitle>
+      </DialogContent>
+    </Dialog>
+  );
 }

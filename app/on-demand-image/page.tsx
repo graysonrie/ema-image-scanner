@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useOnDemandImagesStore } from "@/components/on-demand-image/store/on-demand-images-store";
 import { useCallback } from "react";
+import OnDemandTemplateReorderDialog from "@/components/on-demand-image/OnDemandTemplateReorderDialog";
 
 export default function OnDemandImagePage() {
   const router = useRouter();
@@ -40,78 +41,82 @@ export default function OnDemandImagePage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-2.5rem)] flex-col bg-background p-4 font-sans">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBackClick}
-        title="Back"
-        className="mb-4 shrink-0 self-start"
-      >
-        <ArrowLeftIcon className="size-4" />
-        Back
-      </Button>
-      <div className="mx-auto flex w-full max-w-5xl min-h-0 flex-1 flex-col">
-        <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
-          <div className="w-full flex-col h-full flex">
-            <div className="w-full flex py-2">
-              <Button
-                className={cn(currentImagePaths.length < 2 && "invisible")}
-                onClick={() => {
-                  clearCurrentImagePaths();
-                }}
-              >
-                Clear all images
-              </Button>
-            </div>
-            <OnDemandDragAndDropField />
-            <div className="flex flex-0 items-center gap-2 p-2 w-full h-full">
-              <div className="flex min-w-0 flex-1 items-center gap-2">
-                <Checkbox
-                  id="option"
-                  checked={waitForManualEvalTrigger}
-                  onCheckedChange={(checked) =>
-                    setWaitForManualEvalTrigger(
-                      checked === "indeterminate" ? false : checked
-                    )
-                  }
-                />
-                <Label htmlFor="option">Wait for manual evaluation</Label>
-                <HoverCard>
-                  <HoverCardTrigger asChild>
-                    <InfoIcon className="size-4 text-muted-foreground shrink-0" />
-                  </HoverCardTrigger>
-                  <HoverCardContent className="flex w-64 flex-col gap-0.5">
-                    <Label>
-                      If checked, then you must manually click
-                      &lsquo;Evaluate&lsquo; to trigger the OCR analysis on the
-                      image(s)
-                    </Label>
-                  </HoverCardContent>
-                </HoverCard>
+    <>
+      <OnDemandTemplateReorderDialog />
+
+      <div className="flex h-[calc(100vh-2.5rem)] flex-col bg-background p-4 font-sans">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onBackClick}
+          title="Back"
+          className="mb-4 shrink-0 self-start"
+        >
+          <ArrowLeftIcon className="size-4" />
+          Back
+        </Button>
+        <div className="mx-auto flex w-full max-w-5xl min-h-0 flex-1 flex-col">
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-4">
+            <div className="w-full flex-col h-full flex">
+              <div className="w-full flex py-2">
+                <Button
+                  className={cn(currentImagePaths.length < 2 && "invisible")}
+                  onClick={() => {
+                    clearCurrentImagePaths();
+                  }}
+                >
+                  Clear all images
+                </Button>
               </div>
-              <Button
-                className={cn(
-                  "flex-1",
-                  !waitForManualEvalTrigger && "invisible"
-                )}
-                disabled={!waitForManualEvalTrigger || !canEvaluate}
-                tabIndex={waitForManualEvalTrigger ? 0 : -1}
-                aria-hidden={!waitForManualEvalTrigger}
-                onClick={evaluateCurrentImages}
-              >
-                Evaluate
-              </Button>
+              <OnDemandDragAndDropField />
+              <div className="flex flex-0 items-center gap-2 p-2 w-full h-full">
+                <div className="flex min-w-0 flex-1 items-center gap-2">
+                  <Checkbox
+                    id="option"
+                    checked={waitForManualEvalTrigger}
+                    onCheckedChange={(checked) =>
+                      setWaitForManualEvalTrigger(
+                        checked === "indeterminate" ? false : checked
+                      )
+                    }
+                  />
+                  <Label htmlFor="option">Wait for manual evaluation</Label>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <InfoIcon className="size-4 text-muted-foreground shrink-0" />
+                    </HoverCardTrigger>
+                    <HoverCardContent className="flex w-64 flex-col gap-0.5">
+                      <Label>
+                        If checked, then you must manually click
+                        &lsquo;Evaluate&lsquo; to trigger the OCR analysis on
+                        the image(s)
+                      </Label>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <Button
+                  className={cn(
+                    "flex-1",
+                    !waitForManualEvalTrigger && "invisible"
+                  )}
+                  disabled={!waitForManualEvalTrigger || !canEvaluate}
+                  tabIndex={waitForManualEvalTrigger ? 0 : -1}
+                  aria-hidden={!waitForManualEvalTrigger}
+                  onClick={evaluateCurrentImages}
+                >
+                  Evaluate
+                </Button>
+              </div>
             </div>
-          </div>
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
-            <OnDemandTemplateSelector />
-            <div className="shrink-0">
-              <OnDemandProgramOutput />
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-4">
+              <OnDemandTemplateSelector />
+              <div className="shrink-0">
+                <OnDemandProgramOutput />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
