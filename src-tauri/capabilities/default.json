@@ -13,6 +13,13 @@
     "core:window:allow-toggle-maximize",
     "core:window:allow-start-dragging",
     "core:window:allow-start-resize-dragging",
-    "dialog:default"
+    "dialog:default",
+    "fs:default",
+    "fs:allow-read",
+    "fs:allow-read-file",
+    "fs:allow-read-text-file",
+    "fs:allow-write",
+    "fs:allow-write-file",
+    "fs:allow-write-text-file"
   ]
 }

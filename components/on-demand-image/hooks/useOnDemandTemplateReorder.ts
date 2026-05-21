@@ -6,12 +6,13 @@ import useTauriStore from "@/lib/hooks/useTauriStore";
 import { ON_DEMAND_SELECTED_TEMPLATE_INDEX_KEY } from "../constants/on-demand-template.constants";
 import { useOnDemandImagesStore } from "../store/on-demand-images-store";
 import { useOnDemandTemplatesStore } from "../store/on-demand-templates-store";
+import { persistOnDemandTemplates } from "../utils/persist-on-demand-templates";
 import {
   clampTemplateIndex,
-  cloneTemplate,
   selectedIndexAfterDelete,
   selectedIndexAfterMove,
 } from "../utils/on-demand-template-selection.utils";
+import useOnDemandTemplateImportExport from "./useOnDemandTemplateImportExport";
 
 export default function useOnDemandTemplateReorder() {
   const templates = useOnDemandTemplatesStore((state) => state.templates);
@@ -21,19 +22,19 @@ export default function useOnDemandTemplateReorder() {
   );
   const { getValue, setValue } = useTauriStore();
   const [isSaving, setIsSaving] = useState(false);
+  const { exportTemplates, loadTemplates } =
+    useOnDemandTemplateImportExport(setIsSaving);
 
   const persistTemplates = useCallback(
     async (nextTemplates: typeof templates, nextSelectedIndex: number) => {
       setIsSaving(true);
       try {
-        await saveTemplates(nextTemplates);
-        const index = clampTemplateIndex(
-          nextSelectedIndex,
-          nextTemplates.length,
-        );
-        await setValue(ON_DEMAND_SELECTED_TEMPLATE_INDEX_KEY, index);
-        const template = nextTemplates[index];
-        setSelectedTemplate(template ? cloneTemplate(template) : null);
+        await persistOnDemandTemplates(nextTemplates, nextSelectedIndex, {
+          saveTemplates,
+          setSelectedIndex: (index) =>
+            setValue(ON_DEMAND_SELECTED_TEMPLATE_INDEX_KEY, index),
+          setSelectedTemplate,
+        });
       } catch (error) {
         console.error("Failed to update templates:", error);
         toast.error("Failed to update templates", {
@@ -103,5 +104,7 @@ export default function useOnDemandTemplateReorder() {
     isSaving,
     moveTemplate,
     deleteTemplate,
+    exportTemplates,
+    loadTemplates,
   };
 }

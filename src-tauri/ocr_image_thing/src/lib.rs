@@ -234,6 +234,7 @@ pub struct AnalyzeImageArgs {
 }
 
 fn mime_type_for_image_path(image_path: &str) -> Result<&'static str, Box<dyn Error>> {
+    let image_path = image_path.to_ascii_lowercase();
     if image_path.ends_with(".jpg") || image_path.ends_with(".jpeg") {
         Ok("image/jpeg")
     } else if image_path.ends_with(".png") {
