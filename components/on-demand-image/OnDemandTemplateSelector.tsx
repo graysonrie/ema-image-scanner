@@ -81,7 +81,7 @@ export default function OnDemandTemplateSelector() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-[var(--radix-dropdown-menu-trigger-width)]"
+            className="w-(--radix-dropdown-menu-trigger-width)"
           >
             {templates.map((template, index) => (
               <DropdownMenuItem
