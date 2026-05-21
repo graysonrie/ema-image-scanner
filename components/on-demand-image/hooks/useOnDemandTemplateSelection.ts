@@ -7,29 +7,11 @@ import {
 } from "../constants/on-demand-template.constants";
 import { useOnDemandImagesStore } from "../store/on-demand-images-store";
 import { OnDemandTemplate } from "../types/on-demand-template.type";
+import {
+  clampTemplateIndex,
+  cloneTemplate,
+} from "../utils/on-demand-template-selection.utils";
 import useOnDemandTemplatesLoader from "./useOnDemandTemplatesLoader";
-
-function cloneTemplate(template: OnDemandTemplate): OnDemandTemplate {
-  return {
-    name: template.name,
-    fields: template.fields.map((field) => ({ ...field })),
-  };
-}
-
-function clampTemplateIndex(
-  index: number | undefined,
-  templateCount: number,
-): number {
-  if (templateCount === 0) {
-    return 0;
-  }
-
-  if (typeof index !== "number" || index < 0) {
-    return 0;
-  }
-
-  return Math.min(index, templateCount - 1);
-}
 
 export default function useOnDemandTemplateSelection() {
   const { templates, setTemplates, saveTemplates } = useOnDemandTemplatesLoader();
@@ -69,6 +51,16 @@ export default function useOnDemandTemplateSelection() {
       setSelectedTemplate(draft);
     }
   }, [draft, setSelectedTemplate]);
+
+  useEffect(() => {
+    if (editingIndex === null || !templates[editingIndex]) {
+      return;
+    }
+
+    const synced = cloneTemplate(templates[editingIndex]);
+    setDraft(synced);
+    setSelectedTemplate(synced);
+  }, [editingIndex, setSelectedTemplate, templates]);
 
   useEffect(() => {
     if (templates.length === 0) {

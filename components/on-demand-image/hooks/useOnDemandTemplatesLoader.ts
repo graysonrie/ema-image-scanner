@@ -1,53 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import useTauriStore from "@/lib/hooks/useTauriStore";
+import { useCallback } from "react";
+import { useOnDemandTemplatesStore } from "../store/on-demand-templates-store";
 import { OnDemandTemplate } from "../types/on-demand-template.type";
-import { ON_DEMAND_TEMPLATES_STORAGE_KEY } from "../constants/on-demand-template.constants";
 
 export default function useOnDemandTemplatesLoader() {
-  const [templates, setTemplatesState] = useState<OnDemandTemplate[]>([]);
-  const hasLocalChangesRef = useRef(false);
-  const { getValue, setValue } = useTauriStore();
-
-  const setTemplates = useCallback(
-    (
-      nextTemplates:
-        | OnDemandTemplate[]
-        | ((previous: OnDemandTemplate[]) => OnDemandTemplate[]),
-    ) => {
-      hasLocalChangesRef.current = true;
-      setTemplatesState(nextTemplates);
-    },
-    [],
-  );
-
-  const loadTemplates = useCallback(async () => {
-    const stored =
-      await getValue<OnDemandTemplate[]>(ON_DEMAND_TEMPLATES_STORAGE_KEY);
-    setTemplatesState((current) => {
-      if (hasLocalChangesRef.current) {
-        return current;
-      }
-      return stored ?? [];
-    });
-  }, [getValue]);
-
-  useEffect(() => {
-    void loadTemplates();
-  }, [loadTemplates]);
-
-  const saveTemplates = useCallback(
-    async (nextTemplates: OnDemandTemplate[]) => {
-      await setValue(ON_DEMAND_TEMPLATES_STORAGE_KEY, nextTemplates);
-      hasLocalChangesRef.current = false;
-      setTemplatesState(nextTemplates);
-    },
-    [setValue],
+  const templates = useOnDemandTemplatesStore((state) => state.templates);
+  const setTemplates = useOnDemandTemplatesStore((state) => state.setTemplates);
+  const saveTemplates = useOnDemandTemplatesStore((state) => state.saveTemplates);
+  const reloadFromTauri = useOnDemandTemplatesStore(
+    (state) => state.reloadFromTauri,
   );
 
   const reloadTemplates = useCallback(async () => {
-    hasLocalChangesRef.current = false;
-    await loadTemplates();
-  }, [loadTemplates]);
+    reloadFromTauri();
+  }, [reloadFromTauri]);
 
   return { templates, setTemplates, saveTemplates, reloadTemplates };
 }

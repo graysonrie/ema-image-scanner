@@ -10,9 +10,6 @@ pub fn copy_to_clipboard(state: UtilServiceState, text: &str) -> Result<(), Stri
 }
 
 #[tauri::command]
-pub fn read_image_file_as_data_url(
-    state: UtilServiceState,
-    path: &str,
-) -> Result<String, String> {
+pub fn read_image_file_as_data_url(state: UtilServiceState, path: &str) -> Result<String, String> {
     state.read_image_file_as_data_url(path)
 }

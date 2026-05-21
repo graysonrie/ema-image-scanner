@@ -153,7 +153,7 @@ export default function useOnDemandImageDrop() {
     return () => {
       unlisten?.();
     };
-  }, []);
+  }, [applyImagePaths]);
 
   return {
     dropZoneRef,
