@@ -8,6 +8,7 @@ import OnDemandTemplateSelector from "@/components/on-demand-image/OnDemandTempl
 import OnDemandProgramOutput from "@/components/on-demand-image/OnDemandProgramOutput";
 import useOnDemandManualEvaluation from "@/components/on-demand-image/hooks/useOnDemandManualEvaluation";
 import useOnDemandSettingsHydration from "@/components/on-demand-image/hooks/useOnDemandSettingsHydration";
+import useOnDemandTemplatesHydration from "@/components/on-demand-image/hooks/useOnDemandTemplatesHydration";
 import { useOnDemandSettingsStore } from "@/components/on-demand-image/store/on-demand-settings-store";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -18,13 +19,13 @@ import {
 } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 import { useOnDemandImagesStore } from "@/components/on-demand-image/store/on-demand-images-store";
-import { useCallback } from "react";
 import OnDemandTemplateReorderDialog from "@/components/on-demand-image/OnDemandTemplateReorderDialog";
 
 export default function OnDemandImagePage() {
   const router = useRouter();
 
   useOnDemandSettingsHydration();
+  useOnDemandTemplatesHydration();
   const waitForManualEvalTrigger = useOnDemandSettingsStore(
     (state) => state.waitForManualEvalTrigger
   );
