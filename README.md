@@ -6,6 +6,8 @@ Moreover, this is a desktop app for reading equipment photos with OpenAI vision.
 
 You need a valid [OpenAI API key](https://platform.openai.com/account/api-keys) before anything will evaluate.
 
+<img width="900" height="700" alt="image (1)" src="https://github.com/user-attachments/assets/bbd9825a-321f-4e9e-bc12-026d58be3211" />
+
 ---
 
 ## Getting started
