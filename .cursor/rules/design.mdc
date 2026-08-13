@@ -1,5 +1,0 @@
----
-alwaysApply: true
----
-
-Use shadcn as the component library. For icons, use Lucide. Use Zustand for frontend state management. For persistent state, prefer using the Tauri Store plugin (already installed). Keep React components separated in their own files and promote a modular and organized directory structure. Limit files to 150 lines and refactor into smaller modules if exceeded.

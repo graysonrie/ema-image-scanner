@@ -31,20 +31,35 @@ interface ImageSidebarProps {
 }
 
 export function ImageSidebar({
-  imagePreviews, selectedImage,
-  evaluatedImageNames, evaluatedWithSuffixImageNames, evaluatingImageNames,
-  isLoading, folders, focusedFolder,
-  onSelectImage, onOpenExternal, onDeleteImage, onFocusFolder,
-  scrollToImageName, onScrollHandled,
-  onCreateFolder, onDeleteFolder, onRenameFolder,
+  imagePreviews,
+  selectedImage,
+  evaluatedImageNames,
+  evaluatedWithSuffixImageNames,
+  evaluatingImageNames,
+  isLoading,
+  folders,
+  focusedFolder,
+  onSelectImage,
+  onOpenExternal,
+  onDeleteImage,
+  onFocusFolder,
+  scrollToImageName,
+  onScrollHandled,
+  onCreateFolder,
+  onDeleteFolder,
+  onRenameFolder,
 }: ImageSidebarProps) {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
+    new Set()
+  );
   const [showCreateFolder, setShowCreateFolder] = useState(false);
 
   const selectedImageNames = useProjectStore((s) => s.selectedImageNames);
   const lastClickedImageName = useProjectStore((s) => s.lastClickedImageName);
   const setSelectedImageNames = useProjectStore((s) => s.setSelectedImageNames);
-  const setLastClickedImageName = useProjectStore((s) => s.setLastClickedImageName);
+  const setLastClickedImageName = useProjectStore(
+    (s) => s.setLastClickedImageName
+  );
 
   const rootImages = imagePreviews.filter((p) => !p.imageName.includes("/"));
   const folderImages = (folder: string) =>
@@ -64,7 +79,8 @@ export function ImageSidebar({
   const toggleFolder = (folder: string) => {
     setExpandedFolders((prev) => {
       const next = new Set(prev);
-      if (next.has(folder)) next.delete(folder); else next.add(folder);
+      if (next.has(folder)) next.delete(folder);
+      else next.add(folder);
       return next;
     });
   };
@@ -74,7 +90,8 @@ export function ImageSidebar({
       // Toggle this image in the selection
       const current = [...selectedImageNames];
       const idx = current.indexOf(imageName);
-      if (idx >= 0) current.splice(idx, 1); else current.push(imageName);
+      if (idx >= 0) current.splice(idx, 1);
+      else current.push(imageName);
       setSelectedImageNames(current);
       setLastClickedImageName(imageName);
     } else if (e.shiftKey && lastClickedImageName) {
@@ -89,7 +106,7 @@ export function ImageSidebar({
         setSelectedImageNames([...merged]);
       }
     } else {
-      // Plain click — single select
+      // Plain click - single select
       setSelectedImageNames([imageName]);
       setLastClickedImageName(imageName);
     }
@@ -100,10 +117,16 @@ export function ImageSidebar({
   const pendingImageCount = useProjectStore((s) => s.pendingImageCount);
 
   const sharedListProps = {
-    selectedImage, evaluatedImageNames, evaluatedWithSuffixImageNames,
-    evaluatingImageNames, selectedImageNames,
-    scrollToImageName, onScrollHandled,
-    onImageClick: handleImageClick, onOpenExternal, onDeleteImage,
+    selectedImage,
+    evaluatedImageNames,
+    evaluatedWithSuffixImageNames,
+    evaluatingImageNames,
+    selectedImageNames,
+    scrollToImageName,
+    onScrollHandled,
+    onImageClick: handleImageClick,
+    onOpenExternal,
+    onDeleteImage,
   };
 
   const totalCount = imagePreviews.length;
@@ -112,30 +135,49 @@ export function ImageSidebar({
     <>
       <div className="w-64 border-r flex flex-col overflow-hidden">
         <div className="p-3 border-b flex items-center justify-between">
-          <h2 className="text-sm font-medium text-muted-foreground">Images ({totalCount})</h2>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowCreateFolder(true)} title="New folder">
+          <h2 className="text-sm font-medium text-muted-foreground">
+            Images ({totalCount})
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setShowCreateFolder(true)}
+            title="New folder"
+          >
             <FolderPlus className="w-4 h-4" />
           </Button>
         </div>
         <div
           className="flex-1 overflow-y-auto p-2"
-          onClick={(e) => { if (e.target === e.currentTarget) onFocusFolder(null); }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onFocusFolder(null);
+          }}
         >
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
             </div>
-          ) : totalCount === 0 && folders.length === 0 && pendingImageCount === 0 ? (
+          ) : totalCount === 0 &&
+            folders.length === 0 &&
+            pendingImageCount === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-center">
               <ImageIcon className="w-8 h-8 text-muted-foreground mb-2" />
-              <p className="text-sm text-muted-foreground">No images yet.<br />Click &quot;Add Images&quot; to import.</p>
+              <p className="text-sm text-muted-foreground">
+                No images yet.
+                <br />
+                Click &quot;Add Images&quot; to import.
+              </p>
             </div>
           ) : (
             <div className="flex flex-col gap-1">
               <SidebarImageList images={rootImages} {...sharedListProps} />
               {pendingImageCount > 0 &&
                 Array.from({ length: pendingImageCount }).map((_, i) => (
-                  <div key={`skeleton-${i}`} className="flex items-center gap-2 p-2">
+                  <div
+                    key={`skeleton-${i}`}
+                    className="flex items-center gap-2 p-2"
+                  >
                     <Skeleton className="w-12 h-12 rounded shrink-0" />
                     <div className="flex-1 min-w-0 space-y-1.5">
                       <Skeleton className="h-3.5 w-3/4 rounded" />
@@ -147,9 +189,16 @@ export function ImageSidebar({
                 const images = folderImages(folder);
                 return (
                   <SidebarFolderItem
-                    key={folder} folderName={folder} imageCount={images.length}
-                    isFocused={focusedFolder === folder} isExpanded={expandedFolders.has(folder)}
-                    onToggleExpand={() => toggleFolder(folder)} onFocus={() => { setSelectedImageNames([]); onFocusFolder(folder); }}
+                    key={folder}
+                    folderName={folder}
+                    imageCount={images.length}
+                    isFocused={focusedFolder === folder}
+                    isExpanded={expandedFolders.has(folder)}
+                    onToggleExpand={() => toggleFolder(folder)}
+                    onFocus={() => {
+                      setSelectedImageNames([]);
+                      onFocusFolder(folder);
+                    }}
                     onDelete={() => onDeleteFolder(folder)}
                     onRename={(newName) => onRenameFolder(folder, newName)}
                   >
@@ -161,7 +210,11 @@ export function ImageSidebar({
           )}
         </div>
       </div>
-      <CreateFolderDialog open={showCreateFolder} onOpenChange={setShowCreateFolder} onCreateFolder={onCreateFolder} />
+      <CreateFolderDialog
+        open={showCreateFolder}
+        onOpenChange={setShowCreateFolder}
+        onCreateFolder={onCreateFolder}
+      />
     </>
   );
 }
